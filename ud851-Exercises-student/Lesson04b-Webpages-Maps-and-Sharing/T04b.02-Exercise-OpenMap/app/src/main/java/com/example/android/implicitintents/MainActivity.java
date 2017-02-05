@@ -50,9 +50,17 @@ public class MainActivity extends AppCompatActivity {
     public void onClickOpenAddressButton(View v) {
         // TODO (5) Store an address in a String. DONE
         //String geoLocationAsString = "geo:0,0?q=-0.1167,38.6167(Madrid - Puerta del Sol)&z=11";
-        String geoLocationAsString = "geo:38.6167,-0.1167?z=5&q=Madrid, Puerta del Sol";
+        //String geoLocationAsString = "geo:38.6167,-0.1167?z=5&q=Madrid, Puerta del Sol";
+        String geoLocationAsString = "geo:0,0?z=5&q=Candelaria, Tenerife";
         // TODO (6) Use Uri.Builder with the appropriate scheme and query to form the Uri for the address. DONE
-        Uri uriFromGeoLocation = Uri.parse(geoLocationAsString);
+        //Uri uriFromGeoLocation = Uri.parse(geoLocationAsString);
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo")
+                .path("0,0")
+                .query("Candelaria, Tenerife")
+                .appendQueryParameter("z","11");
+
+        Uri uriFromGeoLocation = builder.build();
 
         // TODO (7) Replace the Toast with a call to showMap, passing in the Uri from the previous step. DONE
         //Toast.makeText(this, "TODO: Open a map when this button is clicked", Toast.LENGTH_SHORT).show();
