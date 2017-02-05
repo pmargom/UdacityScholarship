@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         // TODO (4) Verify that this Intent can be launched and then call startActivity. DONE
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
+        } else {
+            Toast.makeText(this, "No app to open maps.", Toast.LENGTH_LONG).show();
         }
     }
 
