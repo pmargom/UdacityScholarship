@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHnadler {
 
@@ -30,8 +31,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
 
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onClick(MovieModel movie) {
         // TODO: Load DetailActivity
-
+        Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
     }
 
     private void showMovieDataView() {
@@ -82,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected MovieModel[] doInBackground(String... params) {
-            if (params.length == 0) return null;
+            //if (params.length == 0) return null;
 
-            String sortValue = params[0];
+            //String sortValue = params[0];
             // TODO: Prepare NetworkUtils
             //URL movieRequestUrl = NetworkUtils.buildUrl(sortValue);
 
@@ -98,7 +98,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                 return simpleJsonWeatherData;
                 */
-                return null;
+                MovieModel[] movieModels = new MovieModel[15];
+                for (int i = 0; i < 15; i++) {
+                    MovieModel movieModel = new MovieModel();
+                    movieModel.setTitle("Lo que el viento se llevó");
+                    movieModels[i] = movieModel;
+                }
+                return  movieModels;
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
