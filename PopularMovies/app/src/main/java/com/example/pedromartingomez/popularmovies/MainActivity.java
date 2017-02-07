@@ -3,6 +3,7 @@ package com.example.pedromartingomez.popularmovies;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -31,11 +32,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        mRecyclerView.setHasFixedSize(true);
+        //LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        //mRecyclerView.setLayoutManager(layoutManager);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        //mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
 

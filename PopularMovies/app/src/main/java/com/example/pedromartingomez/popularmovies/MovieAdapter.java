@@ -61,6 +61,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         movieAdapterViewHolder.mMovieTextView.setText(movieModel.getTitle());
         Picasso.with(movieAdapterViewHolder.itemView.getContext())
                 .load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+                .placeholder(R.drawable.img_default)
                 //.error(R.drawable.imagenotfound)
                 .into(movieAdapterViewHolder.mPosterImageView);
     }
