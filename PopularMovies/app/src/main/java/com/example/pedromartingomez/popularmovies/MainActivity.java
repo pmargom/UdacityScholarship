@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +12,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.pedromartingomez.popularmovies.utilities.MovieDBJsonUtils;
+import com.example.pedromartingomez.popularmovies.utilities.NetworkUtils;
+import com.example.pedromartingomez.popularmovies.models.Movie;
+
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHnadler {
 
@@ -48,12 +53,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         loadMovieData();
     }
 
-    @Override
-    public void onClick(MovieModel movie) {
-        // TODO: Load DetailActivity
-        Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
-    }
-
     private void showMovieDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
@@ -73,7 +72,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         new FetchMovieTask().execute();
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, MovieModel[]> {
+    @Override
+    public void onClick(Movie movie) {
+        // TODO: Load DetailActivity
+        Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
+    }
+
+    public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
 
         @Override
         protected void onPreExecute() {
@@ -82,30 +87,31 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         @Override
-        protected MovieModel[] doInBackground(String... params) {
+        protected Movie[] doInBackground(String... params) {
             //if (params.length == 0) return null;
 
             //String sortValue = params[0];
             // TODO: Prepare NetworkUtils
-            //URL movieRequestUrl = NetworkUtils.buildUrl(sortValue);
+            URL movieRequestUrl = NetworkUtils.buildUrl("", "");
 
             try {
                 // TODO: Prepare MovieDbJsonUtils
-                /*String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
+                String jsonMoviesResponse = NetworkUtils
+                        .getResponseFromHttpUrl(movieRequestUrl);
 
-                String[] simpleJsonWeatherData = OpenWeatherJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+                Movie[] jsonMoviesData = MovieDBJsonUtils
+                        .getFullMoviesDataFromJson(MainActivity.this, jsonMoviesResponse);
 
-                return simpleJsonWeatherData;
-                */
-                MovieModel[] movieModels = new MovieModel[15];
+                return jsonMoviesData;
+
+                /*Movie[] movies = new Movie[15];
                 for (int i = 0; i < 15; i++) {
-                    MovieModel movieModel = new MovieModel();
-                    movieModel.setTitle("Lo que el viento se llevó");
-                    movieModels[i] = movieModel;
+                    Movie movie = new Movie();
+                    movie.setTitle("Lo que el viento se llevó");
+                    movies[i] = movie;
                 }
-                return  movieModels;
+                return movies;
+                */
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -114,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         @Override
-        protected void onPostExecute(MovieModel[] movieData) {
+        protected void onPostExecute(Movie[] movieData) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (movieData != null) {
                 showMovieDataView();

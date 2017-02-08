@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pedromartingomez.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -16,7 +17,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private MovieModel[] mMoviesData;
+    private Movie[] mMoviesData;
     private final MovieAdapterOnClickHnadler mClickHandler;
 
     public MovieAdapter(MovieAdapterOnClickHnadler mClickHandler) {
@@ -38,7 +39,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            MovieModel movieAtPosition = mMoviesData[adapterPosition];
+            Movie movieAtPosition = mMoviesData[adapterPosition];
             mClickHandler.onClick(movieAtPosition);
         }
 
@@ -57,10 +58,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
-        MovieModel movieModel = mMoviesData[position];
-        movieAdapterViewHolder.mMovieTextView.setText(movieModel.getTitle());
+        Movie movie = mMoviesData[position];
+        movieAdapterViewHolder.mMovieTextView.setText(movie.getTitle());
         Picasso.with(movieAdapterViewHolder.itemView.getContext())
-                .load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+                //.load("http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
+                .load(String.format("%s%s", "http://image.tmdb.org/t/p/w185", movie.getPosterPath()))
                 .placeholder(R.drawable.img_default)
                 //.error(R.drawable.imagenotfound)
                 .into(movieAdapterViewHolder.mPosterImageView);
@@ -72,13 +74,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMoviesData.length;
     }
 
-    public void setMoviesData(MovieModel[] moviesData) {
+    public void setMoviesData(Movie[] moviesData) {
         this.mMoviesData = moviesData;
         notifyDataSetChanged();
     }
 
     public interface MovieAdapterOnClickHnadler {
-        void onClick(MovieModel movie);
+        void onClick(Movie movie);
     }
 }
 
