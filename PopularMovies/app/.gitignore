@@ -64,5 +64,4 @@ gen-external-apklibs
 # End of https://www.gitignore.io/api/android
 
 # custom
-app/src/main/res/values/keys.xml
-/src/main/res/values/keys.xml
+
