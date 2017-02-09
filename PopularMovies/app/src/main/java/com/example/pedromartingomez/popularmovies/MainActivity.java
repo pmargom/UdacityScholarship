@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             //String sortValue = params[0];
             // TODO: Prepare NetworkUtils
-            URL movieRequestUrl = NetworkUtils.buildUrl("", "");
+            URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, "", "");
 
             try {
                 // TODO: Prepare MovieDbJsonUtils

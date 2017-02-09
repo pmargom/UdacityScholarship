@@ -1,7 +1,10 @@
 package com.example.pedromartingomez.popularmovies.utilities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+
+import com.example.pedromartingomez.popularmovies.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,11 +37,11 @@ public final class NetworkUtils {
      * @param sortByDirection The direction that will be sorted for.
      * @return The URL to use to query the api server.
      */
-    public static URL buildUrl(String sortByField, String sortByDirection) {
+    public static URL buildUrl(Context context, String sortByField, String sortByDirection) {
         Uri.Builder builder = Uri.parse(String.format("%s/%s/%s",
                 API_BASE_URL, DISCOVER_PARAM, MOVIE_PARAM)).buildUpon();
 
-        builder.appendQueryParameter(QUERY_PARAM, API_KEY);
+        builder.appendQueryParameter(QUERY_PARAM, context.getString(R.string.api_key));
 
         if (null != sortByField && !sortByField.equals("")) {
             builder.appendQueryParameter(SORT_PARAM, String.format("%s%s", sortByField, sortByDirection));
