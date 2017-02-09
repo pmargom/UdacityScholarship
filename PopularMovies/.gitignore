@@ -8,5 +8,5 @@
 /captures
 .externalNativeBuild
 .idea/vcs.xml
-app/src/main/res/values/keys.xml
 .idea
+/app/src/main/res/values/keys.xml
