@@ -10,3 +10,4 @@
 .idea/vcs.xml
 .idea
 
+/app/src/main/res/values/keys.xml
