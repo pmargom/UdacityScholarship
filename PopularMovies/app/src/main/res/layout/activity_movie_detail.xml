@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_movie_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="Whiplash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_title"
+                tools:layout_editor_absoluteY="22dp"
+                tools:layout_editor_absoluteX="289dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@android:color/darker_gray"
+                android:background="#000"
+                android:padding="8sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/poster"
+                android:id="@+id/iv_poster"
+                android:scaleType="centerCrop"
+                android:layout_below="@+id/tv_title"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        <TextView
+                android:text="10/12/1909"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_release_date"
+                android:layout_weight="0.16"
+                android:layout_marginLeft="9dp"
+                android:layout_marginStart="9dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="18sp"
+                android:textColor="@android:color/background_dark"
+            android:layout_alignTop="@+id/tv_vote_average"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+                android:text="8.9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_vote_average"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                tools:layout_editor_absoluteY="0dp"
+                tools:layout_editor_absoluteX="0dp"
+                android:textSize="18sp"
+            android:layout_marginRight="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="7dp"
+            android:layout_below="@+id/iv_poster"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_overview"
+            android:textSize="16sp"
+            android:layout_marginTop="30dp"
+            android:textAlignment="viewStart"
+            android:layout_below="@+id/tv_release_date"
+            android:layout_alignLeft="@+id/tv_release_date"
+            android:layout_alignStart="@+id/tv_release_date" />
+
+        <TextView
+            android:text="Original title:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_release_date"
+            android:layout_alignLeft="@+id/tv_release_date"
+            android:layout_alignStart="@+id/tv_release_date"
+            android:id="@+id/tv_original_title_label"
+            android:textSize="16sp"
+            android:layout_alignRight="@+id/tv_release_date"
+            android:layout_alignEnd="@+id/tv_release_date"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:text="Original title:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_original_title"
+            android:textSize="16sp"
+            android:layout_alignBaseline="@+id/tv_original_title_label"
+            android:layout_alignBottom="@+id/tv_original_title_label"
+            android:layout_toRightOf="@+id/tv_release_date"
+            android:layout_alignRight="@+id/tv_vote_average"
+            android:layout_alignEnd="@+id/tv_vote_average" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

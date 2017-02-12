@@ -1,4 +1,4 @@
-package com.example.pedromartingomez.popularmovies;
+package com.example.pedromartingomez.popularmovies.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.example.pedromartingomez.popularmovies.R;
 import com.example.pedromartingomez.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -26,12 +26,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final TextView mMovieTextView;
+        //public final TextView mMovieTextView;
         public final ImageView mPosterImageView;
 
         public MovieAdapterViewHolder(View itemView) {
             super(itemView);
-            this.mMovieTextView = (TextView) itemView.findViewById(R.id.tv_movie_data);
+            //this.mMovieTextView = (TextView) itemView.findViewById(R.id.tv_movie_data);
             this.mPosterImageView = (ImageView) itemView.findViewById(R.id.iv_poster);
             itemView.setOnClickListener(this);
         }
@@ -59,7 +59,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
         Movie movie = mMoviesData[position];
-        movieAdapterViewHolder.mMovieTextView.setText(movie.getTitle());
+        //movieAdapterViewHolder.mMovieTextView.setText(movie.getTitle());
         Picasso.with(movieAdapterViewHolder.itemView.getContext())
                 //.load("http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
                 .load(String.format("%s%s", "http://image.tmdb.org/t/p/w185", movie.getPosterPath()))

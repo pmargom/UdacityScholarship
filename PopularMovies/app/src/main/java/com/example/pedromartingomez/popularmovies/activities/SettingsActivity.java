@@ -1,8 +1,10 @@
-package com.example.pedromartingomez.popularmovies;
+package com.example.pedromartingomez.popularmovies.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import com.example.pedromartingomez.popularmovies.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

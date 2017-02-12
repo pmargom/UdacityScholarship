@@ -1,7 +1,10 @@
-package com.example.pedromartingomez.popularmovies;
+package com.example.pedromartingomez.popularmovies.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -16,9 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.widget.Toast;
 
+import com.example.pedromartingomez.popularmovies.R;
+import com.example.pedromartingomez.popularmovies.adapters.MovieAdapter;
 import com.example.pedromartingomez.popularmovies.utilities.MovieDBJsonUtils;
 import com.example.pedromartingomez.popularmovies.utilities.NetworkUtils;
 import com.example.pedromartingomez.popularmovies.models.Movie;
@@ -66,10 +71,13 @@ public class MainActivity extends AppCompatActivity
 
         Bundle bundleForLoader = null;
 
-        getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
-
         Log.d(TAG, "onCreate: registering preference changed listener");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+        if (CheckConnection()) {
+            getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
+        }
+
     }
 
     @Override
@@ -78,7 +86,9 @@ public class MainActivity extends AppCompatActivity
 
         if (PREFERENCES_HAVE_BEEN_UPDATED) {
             Log.d(TAG, "onStart: preferences were updated");
-            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+            if (CheckConnection()) {
+                getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+            }
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
     }
@@ -115,7 +125,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(Movie movie) {
         // TODO: Load DetailActivity
-        Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
+        Intent startMovieDetailActivity = new Intent(this, MovieDetailActivity.class);
+        startMovieDetailActivity.putExtra("MOVIE", movie);
+        startActivity(startMovieDetailActivity);
     }
 
     @Override
@@ -136,6 +149,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public Movie[] loadInBackground() {
+
                 URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, mSortParam);
 
                 try {
@@ -156,6 +170,16 @@ public class MainActivity extends AppCompatActivity
                 super.deliverResult(data);
             }
         };
+    }
+
+    public boolean CheckConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean testConnection = netInfo != null && netInfo.isConnected();
+        if (!testConnection) {
+            Toast.makeText(this, "No internet connection available", Toast.LENGTH_LONG).show();;
+        }
+        return testConnection;
     }
 
     @Override
@@ -191,7 +215,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.action_refresh) {
             invalidateData();
-            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+            if (CheckConnection()) {
+                getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+            }
             return true;
         }
 
