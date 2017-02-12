@@ -2,9 +2,7 @@ package com.example.pedromartingomez.popularmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mLoadingIndicator;
     private static final int MOVIE_LOADER_ID = 0;
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
+    private static String mSortParam = "top_rated"; // the inicial query result will use the top rated filter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +59,7 @@ public class MainActivity extends AppCompatActivity
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        /* Once all of our views are setup, we can load the weather data. */
-        //loadMovieData();
+        /* Once all of our views are setup, we can load the movies data. */
         int loaderId = MOVIE_LOADER_ID;
 
         LoaderCallbacks<Movie[]> callback = MainActivity.this;
@@ -97,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         PREFERENCES_HAVE_BEEN_UPDATED = true;
+        mSortParam = sharedPreferences.getString(s, "");
     }
 
     private void showMovieDataView() {
@@ -137,7 +136,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public Movie[] loadInBackground() {
-                URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, "", "");
+                URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, mSortParam);
 
                 try {
                     String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
@@ -178,59 +177,6 @@ public class MainActivity extends AppCompatActivity
     private void invalidateData() {
         mMovieAdapter.setMoviesData(null);
     }
-
-//    public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            mLoadingIndicator.setVisibility(View.VISIBLE);
-//        }
-//
-//        @Override
-//        protected Movie[] doInBackground(String... params) {
-//            //if (params.length == 0) return null;
-//
-//            //String sortValue = params[0];
-//            // TODO: Prepare NetworkUtils
-//            URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, "", "");
-//
-//            try {
-//                // TODO: Prepare MovieDbJsonUtils
-//                String jsonMoviesResponse = NetworkUtils
-//                        .getResponseFromHttpUrl(movieRequestUrl);
-//
-//                Movie[] jsonMoviesData = MovieDBJsonUtils
-//                        .getFullMoviesDataFromJson(MainActivity.this, jsonMoviesResponse);
-//
-//                return jsonMoviesData;
-//
-//                /*Movie[] movies = new Movie[15];
-//                for (int i = 0; i < 15; i++) {
-//                    Movie movie = new Movie();
-//                    movie.setTitle("Lo que el viento se llevó");
-//                    movies[i] = movie;
-//                }
-//                return movies;
-//                */
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Movie[] movieData) {
-//            mLoadingIndicator.setVisibility(View.INVISIBLE);
-//            if (movieData != null) {
-//                showMovieDataView();
-//                mMovieAdapter.setMoviesData(movieData);
-//            } else {
-//                showErrorMessage();
-//            }
-//        }
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

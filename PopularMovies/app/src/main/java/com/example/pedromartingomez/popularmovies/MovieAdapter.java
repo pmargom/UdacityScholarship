@@ -64,7 +64,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 //.load("http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
                 .load(String.format("%s%s", "http://image.tmdb.org/t/p/w185", movie.getPosterPath()))
                 .placeholder(R.drawable.img_default)
-                //.error(R.drawable.imagenotfound)
+                .error(R.drawable.img_default)
                 .into(movieAdapterViewHolder.mPosterImageView);
     }
 

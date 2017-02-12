@@ -22,10 +22,9 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String API_BASE_URL = "https://api.themoviedb.org/3";
-    private static final String API_KEY = "";
+    private static String api_key = "";
 
     final static String QUERY_PARAM = "api_key";
-    final static String DISCOVER_PARAM = "discover";
     final static String MOVIE_PARAM = "movie";
     final static String SORT_PARAM = "sort_by";
 
@@ -33,20 +32,17 @@ public final class NetworkUtils {
      * Builds the URL used to talk to the api server using a sorting (optional). This sorting is based
      * on the query capabilities of the api provider that we are using.
      *
-     * @param sortByField The field that will be sorted for.
-     * @param sortByDirection The direction that will be sorted for.
+     * @param sortBy The field that will be sorted for.
      * @return The URL to use to query the api server.
      */
-    public static URL buildUrl(Context context, String sortByField, String sortByDirection) {
-        Uri.Builder builder = Uri.parse(String.format("%s/%s/%s",
-                API_BASE_URL, DISCOVER_PARAM, MOVIE_PARAM)).buildUpon();
+    public static URL buildUrl(Context context, String sortBy) {
+        api_key = context.getString(R.string.api_key);
 
-        builder.appendQueryParameter(QUERY_PARAM, context.getString(R.string.api_key));
-
-        if (null != sortByField && !sortByField.equals("")) {
-            builder.appendQueryParameter(SORT_PARAM, String.format("%s%s", sortByField, sortByDirection));
-        }
-        Uri builtUri = builder.build();
+        Uri builtUri = Uri.parse(API_BASE_URL)
+                .buildUpon()
+                .appendPath(MOVIE_PARAM)
+                .appendPath(sortBy).appendQueryParameter(QUERY_PARAM, api_key)
+                .build();
 
         URL url = null;
         try {
