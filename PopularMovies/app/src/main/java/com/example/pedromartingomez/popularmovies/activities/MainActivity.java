@@ -30,18 +30,21 @@ import com.example.pedromartingomez.popularmovies.models.Movie;
 
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.MovieAdapterOnClickHnadler,
         LoaderCallbacks<Movie[]>,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private RecyclerView mRecyclerView;
+
+    @BindView(R.id.recyclerview_movie) RecyclerView mRecyclerView;
+    @BindView(R.id.tv_error_message_display) TextView mErrorMessageDisplay;
+    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+
     private MovieAdapter mMovieAdapter;
-
-    private TextView mErrorMessageDisplay;
-
-    private ProgressBar mLoadingIndicator;
     private static final int MOVIE_LOADER_ID = 0;
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
     private static String mSortParam = "top_rated"; // the inicial query result will use the top rated filter
@@ -51,33 +54,36 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movie);
+        setUI();
+        setLoader();
 
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-
+        /*ButterKnife.bind(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
-
         mMovieAdapter = new MovieAdapter(this);
-
         mRecyclerView.setAdapter(mMovieAdapter);
 
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
-        /* Once all of our views are setup, we can load the movies data. */
-        int loaderId = MOVIE_LOADER_ID;
-
-        LoaderCallbacks<Movie[]> callback = MainActivity.this;
-
-        Bundle bundleForLoader = null;
-
         Log.d(TAG, "onCreate: registering preference changed listener");
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);*/
         if (CheckConnection()) {
-            getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
+            getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, MainActivity.this);
         }
 
+    }
+
+    private void setUI() {
+        ButterKnife.bind(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mMovieAdapter = new MovieAdapter(this);
+        mRecyclerView.setAdapter(mMovieAdapter);
+    }
+
+    private void setLoader() {
+        Log.d(TAG, "onCreate: registering preference changed listener");
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                .registerOnSharedPreferenceChangeListener(MainActivity.this);
     }
 
     @Override

@@ -11,14 +11,17 @@ import com.example.pedromartingomez.popularmovies.R;
 import com.example.pedromartingomez.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MovieDetailActivity extends AppCompatActivity {
 
-    private ImageView mPosterImageView;
-    private TextView mTitleTextView;
-    private TextView mReleaseDateTextView;
-    private TextView mVoteAverageTextView;
-    private TextView mOverViewTextView;
-    private TextView mOriginalTitleTextView;
+    @BindView(R.id.iv_poster) ImageView mPosterImageView;
+    @BindView(R.id.tv_title) TextView mTitleTextView;
+    @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
+    @BindView(R.id.tv_vote_average) TextView mVoteAverageTextView;
+    @BindView(R.id.tv_overview) TextView mOverViewTextView;
+    @BindView(R.id.tv_original_title) TextView mOriginalTitleTextView;
 
     private Movie mMovie;
 
@@ -45,12 +48,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void setUI() {
-        mPosterImageView = (ImageView) findViewById(R.id.iv_poster);
-        mTitleTextView = (TextView) findViewById(R.id.tv_title);
-        mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
-        mVoteAverageTextView = (TextView) findViewById(R.id.tv_vote_average);
-        mOverViewTextView = (TextView) findViewById(R.id.tv_overview);
-        mOriginalTitleTextView = (TextView) findViewById(R.id.tv_original_title);
+        ButterKnife.bind(this);
     }
 
     private void loadDataPassedInIntent() {
