@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <ListPreference
-        android:defaultValue="@string/pref_sort_label_top_rated"
+        android:defaultValue="@string/pref_sort_top_rated"
         android:entries="@array/pref_sorting_options"
         android:entryValues="@array/pref_sort_values"
         android:key="@string/pref_sort_key"
