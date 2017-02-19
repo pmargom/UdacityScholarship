@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.widget.Toast;
 
 import com.example.pedromartingomez.popularmovies.R;
 import com.example.pedromartingomez.popularmovies.adapters.MovieAdapter;
@@ -123,9 +123,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(Movie movie) {
-        // TODO: Load DetailActivity
-        //Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
+    public void onClick(Movie movie) {  
         Intent startMovieDetailActivity = new Intent(this, MovieDetailActivity.class);
         startMovieDetailActivity.putExtra("MOVIE", movie);
         startActivity(startMovieDetailActivity);
@@ -177,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         boolean testConnection = netInfo != null && netInfo.isConnected();
         if (!testConnection) {
-            Toast.makeText(this, "No internet connection available", Toast.LENGTH_LONG).show();;
+            Snackbar.make(this.mRecyclerView, R.string.no_internet_connection, Snackbar.LENGTH_LONG).show();
         }
         return testConnection;
     }
