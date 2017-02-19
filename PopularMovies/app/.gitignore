@@ -66,3 +66,4 @@ gen-external-apklibs
 
 # custom
 
+!/src/main/res/values/keys.xml
