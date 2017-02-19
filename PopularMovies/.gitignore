@@ -9,3 +9,8 @@
 .externalNativeBuild
 .idea/vcs.xml
 .idea
+<<<<<<< HEAD
+=======
+/app/src/main/res/values/keys.xml
+libs/
+>>>>>>> 3573a6d8b02e36284ab65dca8f5a9cfac48fb833
