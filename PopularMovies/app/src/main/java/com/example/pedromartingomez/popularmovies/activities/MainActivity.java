@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,65 +20,69 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import com.android.volley.toolbox.StringRequest;
 import com.example.pedromartingomez.popularmovies.R;
 import com.example.pedromartingomez.popularmovies.adapters.MovieAdapter;
-import com.example.pedromartingomez.popularmovies.utilities.MovieDBJsonUtils;
+import com.example.pedromartingomez.popularmovies.models.MovieResponse;
+import com.example.pedromartingomez.popularmovies.utilities.ApiRequest;
 import com.example.pedromartingomez.popularmovies.utilities.NetworkUtils;
 import com.example.pedromartingomez.popularmovies.models.Movie;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.MovieAdapterOnClickHnadler,
-        LoaderCallbacks<Movie[]>,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private RecyclerView mRecyclerView;
+
+    @BindView(R.id.recyclerview_movie)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
+
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
+
     private MovieAdapter mMovieAdapter;
-
-    private TextView mErrorMessageDisplay;
-
-    private ProgressBar mLoadingIndicator;
-    private static final int MOVIE_LOADER_ID = 0;
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
-    private static String mSortParam = "top_rated"; // the inicial query result will use the top rated filter
+    private static String mSortParam = "top_rated"; // the initial query result will use the top rated filter
+    private ApiRequest mApiRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movie);
+        setUI();
 
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        mApiRequest = ApiRequest.getInstance(this);
 
+        loadData();
+    }
+
+    private void setUI() {
+        ButterKnife.bind(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
-
         mMovieAdapter = new MovieAdapter(this);
-
         mRecyclerView.setAdapter(mMovieAdapter);
-
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
-        /* Once all of our views are setup, we can load the movies data. */
-        int loaderId = MOVIE_LOADER_ID;
-
-        LoaderCallbacks<Movie[]> callback = MainActivity.this;
-
-        Bundle bundleForLoader = null;
-
         Log.d(TAG, "onCreate: registering preference changed listener");
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
-        if (CheckConnection()) {
-            getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
-        }
-
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                .registerOnSharedPreferenceChangeListener(MainActivity.this);
     }
 
     @Override
@@ -85,11 +90,19 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
 
         if (PREFERENCES_HAVE_BEEN_UPDATED) {
-            Log.d(TAG, "onStart: preferences were updated");
-            if (CheckConnection()) {
-                getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
-            }
             PREFERENCES_HAVE_BEEN_UPDATED = false;
+            Log.d(TAG, "onStart: preferences were updated");
+            invalidateData();
+            loadData();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mApiRequest.getRequestQueue() != null) {
+            mApiRequest.getRequestQueue().cancelAll(TAG);
         }
     }
 
@@ -97,7 +110,6 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        /* Unregister MainActivity as an OnPreferenceChangedListener to avoid any memory leaks. */
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
@@ -106,6 +118,8 @@ public class MainActivity extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         PREFERENCES_HAVE_BEEN_UPDATED = true;
         mSortParam = sharedPreferences.getString(s, "");
+        invalidateData();
+        loadData();
     }
 
     private void showMovieDataView() {
@@ -123,53 +137,61 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(Movie movie) {
-        // TODO: Load DetailActivity
-        //Toast.makeText(this, movie.getTitle(), Toast.LENGTH_LONG).show();
+    public void onClick(Movie movie) {  
         Intent startMovieDetailActivity = new Intent(this, MovieDetailActivity.class);
         startMovieDetailActivity.putExtra("MOVIE", movie);
         startActivity(startMovieDetailActivity);
     }
 
-    @Override
-    public Loader<Movie[]> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<Movie[]> (this) {
+    private void loadData() {
 
-            Movie[] mMovieData = null;
+        if (!CheckConnection()) {
+            return;
+        }
 
+        mApiRequest.addToRequestQueue(buildRequest());
+    }
+
+    private StringRequest buildRequest() {
+
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+
+        String url = NetworkUtils.buildUrl(MainActivity.this, mSortParam);
+
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
-            protected void onStartLoading() {
-                if (mMovieData != null) {
-                    deliverResult(mMovieData);
-                } else {
-                    mLoadingIndicator.setVisibility(View.VISIBLE);
-                    forceLoad();
-                }
-            }
+            public void onResponse(String response) {
+                Log.d(TAG, "Response from Volley: " + response);
 
-            @Override
-            public Movie[] loadInBackground() {
+                try (Reader reader = new StringReader(response)){
+                    Gson gson = new GsonBuilder().create();
 
-                URL movieRequestUrl = NetworkUtils.buildUrl(MainActivity.this, mSortParam);
-
-                try {
-                    String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-
-                    Movie[] jsonMoviesData = MovieDBJsonUtils.getFullMoviesDataFromJson(MainActivity.this, jsonMoviesResponse);
-
-                    return jsonMoviesData;
-
-                } catch (Exception e) {
+                    MovieResponse movieResponse = gson.fromJson(reader, MovieResponse.class);
+                    List<Movie> data = movieResponse.results;
+                    mMovieAdapter.setMoviesData(data);
+                    if (null == data) {
+                        showErrorMessage();
+                    } else {
+                        showMovieDataView();
+                    }
+                } catch (IOException e) {
                     e.printStackTrace();
-                    return null;
+                }
+                finally {
+                    mLoadingIndicator.setVisibility(View.INVISIBLE);
                 }
             }
-
-            public void deliverResult(Movie[] data) {
-                mMovieData = data;
-                super.deliverResult(data);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ERROR", "Error");
+                mLoadingIndicator.setVisibility(View.INVISIBLE);
             }
-        };
+        });
+
+        stringRequest.setTag(TAG);
+        return stringRequest;
     }
 
     public boolean CheckConnection() {
@@ -177,25 +199,9 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         boolean testConnection = netInfo != null && netInfo.isConnected();
         if (!testConnection) {
-            Toast.makeText(this, "No internet connection available", Toast.LENGTH_LONG).show();;
+            Snackbar.make(this.mRecyclerView, R.string.no_internet_connection, Snackbar.LENGTH_LONG).show();
         }
         return testConnection;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Movie[]> loader, Movie[] data) {
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        mMovieAdapter.setMoviesData(data);
-        if (null == data) {
-            showErrorMessage();
-        } else {
-            showMovieDataView();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Movie[]> loader) {
-
     }
 
     private void invalidateData() {
@@ -203,7 +209,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)   {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.movie, menu);
         return true;
@@ -215,9 +221,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.action_refresh) {
             invalidateData();
-            if (CheckConnection()) {
-                getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
-            }
+            loadData();
             return true;
         }
 
