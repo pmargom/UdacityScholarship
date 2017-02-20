@@ -3,6 +3,8 @@ package com.example.pedromartingomez.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,24 +14,64 @@ import java.util.List;
 
 public class Movie implements Parcelable {
 
+    private static final String MDB_POSTER_PATH = "poster_path";
+    private static final String MDB_ADULT = "adult";
+    private static final String MDB_OVERVIEW = "overview";
+    private static final String MDB_RELEASE_DATE = "release_date";
+    private static final String MDB_GENRE_IDS = "genre_ids";
+    private static final String MDB_ID = "id";
+    private static final String MDB_ORIGINAL_TITLE = "original_title";
+    private static final String MDB_ORIGINAL_LANGUAGE = "original_language";
+    private static final String MDB_TITLE = "title";
+    private static final String MDB_BACKDROP_PATH = "backdrop_path";
+    private static final String MDB_POPULARITY = "popularity";
+    private static final String MDB_VOTE_COUNT = "vote_count";
+    private static final String MDB_VIDEO = "video";
+    private static final String MDB_VOTE_AVERAGE = "vote_average";
+
+    @SerializedName(MDB_POSTER_PATH)
     private String posterPath;
+
+    @SerializedName(MDB_ADULT)
     private Boolean adult;
+
+    @SerializedName(MDB_OVERVIEW)
     private String overview;
+
+    @SerializedName(MDB_RELEASE_DATE)
     private String releaseDate;
+
+    @SerializedName(MDB_GENRE_IDS)
     private List<Integer> genreIds = null;
+
+    @SerializedName(MDB_ID)
     private Integer id;
+
+    @SerializedName(MDB_ORIGINAL_TITLE)
     private String originalTitle;
+
+    @SerializedName(MDB_ORIGINAL_LANGUAGE)
     private String originalLanguage;
+
+    @SerializedName(MDB_TITLE)
     private String title;
+
+    @SerializedName(MDB_BACKDROP_PATH)
     private String backdropPath;
+
+    @SerializedName(MDB_POPULARITY)
     private Float popularity;
+
+    @SerializedName(MDB_VOTE_COUNT)
     private Integer voteCount;
+
+    @SerializedName(MDB_VIDEO)
     private Boolean video;
+
+    @SerializedName(MDB_VOTE_AVERAGE)
     private Float voteAverage;
 
-    public Movie() {
-
-    }
+    public Movie() {}
 
     protected Movie(Parcel in) {
         posterPath = in.readString();

@@ -5,11 +5,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.example.pedromartingomez.popularmovies.R;
 import com.example.pedromartingomez.popularmovies.models.Movie;
-import com.squareup.picasso.Picasso;
+import com.example.pedromartingomez.popularmovies.utilities.ApiRequest;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by pedromartingomez on 6/2/17.
@@ -17,7 +22,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private Movie[] mMoviesData;
+    private List<Movie> mMoviesData;
     private final MovieAdapterOnClickHnadler mClickHandler;
 
     public MovieAdapter(MovieAdapterOnClickHnadler mClickHandler) {
@@ -26,20 +31,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        //public final TextView mMovieTextView;
-        public final ImageView mPosterImageView;
+        @BindView(R.id.iv_poster)
+        NetworkImageView mPosterImageView;
 
         public MovieAdapterViewHolder(View itemView) {
             super(itemView);
-            //this.mMovieTextView = (TextView) itemView.findViewById(R.id.tv_movie_data);
-            this.mPosterImageView = (ImageView) itemView.findViewById(R.id.iv_poster);
             itemView.setOnClickListener(this);
+            ButterKnife.bind(this, itemView);
         }
 
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            Movie movieAtPosition = mMoviesData[adapterPosition];
+            Movie movieAtPosition = mMoviesData.get(adapterPosition);
             mClickHandler.onClick(movieAtPosition);
         }
 
@@ -58,23 +62,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
-        Movie movie = mMoviesData[position];
-        //movieAdapterViewHolder.mMovieTextView.setText(movie.getTitle());
-        Picasso.with(movieAdapterViewHolder.itemView.getContext())
-                //.load("http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg")
-                .load(String.format("%s%s", "http://image.tmdb.org/t/p/w185", movie.getPosterPath()))
-                .placeholder(R.drawable.img_default)
-                .error(R.drawable.img_default)
-                .into(movieAdapterViewHolder.mPosterImageView);
+        Movie movie = mMoviesData.get(position);
+        movieAdapterViewHolder.mPosterImageView
+                .setImageUrl(String.format("%s%s", "http://image.tmdb.org/t/p/w185", movie.getPosterPath())
+                        , ApiRequest.getInstance(movieAdapterViewHolder.itemView.getContext()).getImageLoader());
+
     }
 
     @Override
     public int getItemCount() {
         if (null == mMoviesData) return 0;
-        return mMoviesData.length;
+        return mMoviesData.size();
     }
 
-    public void setMoviesData(Movie[] moviesData) {
+    public void setMoviesData(List<Movie> moviesData) {
         this.mMoviesData = moviesData;
         notifyDataSetChanged();
     }
